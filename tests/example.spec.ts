@@ -1,9 +1,85 @@
 import { test, expect } from '@playwright/test';
 import loginPage from '../pages/loginPage';
 import ManualLoginPage from '../pages/manualLoginPage';
+import { TestHooks } from '../hooks/hooks';
+
+
+
+const hooks = new TestHooks();
+
+test.beforeAll(async () => {
+  await hooks.beforeAll();
+});
+
+test.afterAll(async () => {
+  await hooks.afterAll();
+});
+
+
+test('Valid login test',async ({page})=>{
+
+  const hookspage = hooks.getPage();
+  if (!hookspage) throw new Error('Page is not initialized.');
+
+  const login = new loginPage(page);
+  const manualLogin = new ManualLoginPage(page);
+
+  await page.goto('https://qa-internet.bgp.onl/');
+
+  await login.login('temp-govtech','bgPB3Aw3SomeGvtF@lk!');
+
+
+  await page.locator('[id="login-button"]').click();
+
+  const ele = await manualLogin.pageHeaderText();
+  console.log(ele);
+
+  await manualLogin.enterManualLoginDetails('BGPQETECH','S1234567A','Acceptor','Tan Ah Kow');
+ 
+  const element = await page.locator('xpath = .//*[text()="Get new grant"]');
+   
+  await element.waitFor({ state: 'attached', timeout: 55000 }); // 550000 ms timeout
+
+  const status= await element.isVisible();
+  console.log(status);
+
+});
+
+
+test('InValid login test',async ({page})=>{
+
+  const hookspage = hooks.getPage();
+  if (!hookspage) throw new Error('Page is not initialized.');
+
+  const login = new loginPage(page);
+  const manualLogin = new ManualLoginPage(page);
+
+  await page.goto('https://qa-internet.bgp.onl/');
+
+  await login.login('temp-govtech','bgPB3Aw3SomeGvtF@lk!');
+
+
+  await page.locator('[id="login-button"]').click();
+
+  const ele = await manualLogin.pageHeaderText();
+  console.log(ele);
+
+  await manualLogin.enterManualLoginDetails('test','test','test','test');
+ 
+  const element = await page.locator('xpath = .//*[@class="unauthorized-title--X5R0 error-title"]');
+   
+  await element.waitFor({ state: 'attached', timeout: 55000 }); // 550000 ms timeout
+
+  const status= await element.isVisible();
+  console.log(status);
+
+});
 
 
 test('Submit Draft Project', async ({ page }) => {
+
+  const hookspage = hooks.getPage();
+  if (!hookspage) throw new Error('Page is not initialized.');
 
   const login = new loginPage(page);
   const manualLogin = new ManualLoginPage(page);
@@ -188,7 +264,7 @@ test('Select Submited Draft Project',async ({page})=>{
   await page.getByTestId('text-field').click();
   await page.locator('[placeholder="Key in name for overseas vendor"]').fill('Vednor');
   await page.locator('[id="react-project_cost-vendors-0-attachments-btn"]').click();
-  await page.locator('body').setInputFiles('./files/A Mindcalm pers 0.png');
+  await page.locator('body').setInputFiles('/files/A Mindcalm pers 0.png');
   await page.getByLabel('Estimated Cost in Billing').click();
   await page.getByLabel('Estimated Cost in Billing').fill('10');
   await page.getByRole('button', { name: 'Next' }).click();
@@ -208,119 +284,4 @@ test('Select Submited Draft Project',async ({page})=>{
 
 })
 
-
-test('test', async ({ page }) => {
- 
-  const login = new loginPage(page);
-  const manualLogin = new ManualLoginPage(page);
-
-  await page.goto('https://qa-internet.bgp.onl/');
-
-  await login.login('temp-govtech','bgPB3Aw3SomeGvtF@lk!');
-
-
-  await page.locator('[id="login-button"]').click();
-
-
-  await manualLogin.enterManualLoginDetails('BGPQETECH','S1234567A','Acceptor','Tan Ah Kow');
- 
-  const element = await page.locator('[href="#drafts"]');
-
-  await element.waitFor({ state: 'attached', timeout: 55000 }); // 5000 ms timeout
-
-  element.click();
-
-  await page.locator('xpath = .//*[@id="db-apps-drafts"]/tbody/tr[2]//a').click();
-  await page.getByRole('button', { name: 'Proceed' }).click();
-  await page.locator('.radiobutton').first().click();
-  await page.locator('div:nth-child(7) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('div:nth-child(8) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('div:nth-child(9) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.locator('#react-contact_info-name').click();
-  await page.locator('#react-contact_info-name').fill('Sagar');
-  await page.locator('#react-contact_info-name').press('Tab');
-  await page.locator('#react-contact_info-designation').fill('Testautomation');
-  await page.getByTestId('number-field').dblclick();
-  await page.getByTestId('number-field').fill('12345678');
-  await page.locator('#react-contact_info-primary_email').click();
-  await page.getByPlaceholder('Enter your Postal Code').click();
-  await page.getByPlaceholder('Enter your Postal Code').fill('509734');
-  await page.locator('.form-horizontal > .row').first().click();
-  await page.locator('#react-contact_info-offeree_name').click();
-  await page.locator('#react-contact_info-offeree_designation').click();
-  await page.locator('#react-contact_info-offeree_email').click();
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByTestId('text-field').click();
-  await page.getByTestId('text-field').fill('test Project');
-  await page.getByLabel('Start Date *').click();
-  await page.getByRole('cell', { name: '5' }).nth(1).click();
-  await page.getByLabel('End Date *').click();
-  await page.getByRole('cell', { name: '5' }).nth(1).click();
-  await page.getByPlaceholder('Describe the products/').click();
-  await page.getByPlaceholder('Describe the products/').fill('test');
-  await page.getByText('month').click();
-  await page.getByText('Market Readiness Assistance (MRA)Submit Your Proposal* Mandatory fieldProject').click();
-  await page.locator('#react-select-project-activity--value').getByText('Select...').click();
-  await page.getByLabel('FTA & Trade Compliance').click();
-  await page.getByText('Select...').click();
-  await page.locator('#react-select-project-primary_market--value').getByRole('combobox').fill('indi');
-  await page.getByLabel('India', { exact: true }).click();
-  await page.getByText('Yes').click();
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByPlaceholder('eg. 05 Sep').click();
-  await page.getByRole('cell', { name: '28' }).nth(2).click();
-  await page.locator('#react-project_impact-overseas_sales_0').click();
-  await page.locator('#react-project_impact-overseas_sales_0').fill('100');
-  await page.locator('#react-project_impact-overseas_sales_1').click();
-  await page.locator('#react-project_impact-overseas_sales_1').fill('100');
-  await page.locator('#react-project_impact-overseas_sales_2').click();
-  await page.locator('#react-project_impact-overseas_sales_2').fill('1');
-  await page.locator('#react-project_impact-overseas_sales_3').click();
-  await page.locator('#react-project_impact-overseas_sales_3').fill('1');
-  await page.locator('#react-project_impact-overseas_investments_0').click();
-  await page.locator('#react-project_impact-overseas_investments_0').fill('1');
-  await page.locator('#react-project_impact-overseas_investments_1').click();
-  await page.locator('#react-project_impact-overseas_investments_1').fill('1');
-  await page.locator('#react-project_impact-overseas_investments_2').click();
-  await page.locator('#react-project_impact-overseas_investments_2').fill('1');
-  await page.locator('#react-project_impact-overseas_investments_3').click();
-  await page.locator('#react-project_impact-overseas_investments_3').fill('1');
-  await page.getByPlaceholder('Provide reasons for overseas').click();
-  await page.getByPlaceholder('Provide reasons for overseas').fill('test');
-  await page.getByPlaceholder('e.g. first mover advantage,').click();
-  await page.getByPlaceholder('e.g. first mover advantage,').fill('test');
-  await page.locator('.main').click();
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.locator('#react-project_cost-vendors-accordion-header').getByText('SGD').click();
-  await page.getByRole('button', { name: 'Add New Item' }).click();
-  await page.locator('label').filter({ hasText: /^Overseas$/ }).locator('span').first().click();
-  await page.getByTestId('text-field').click();
-  await page.getByTestId('text-field').fill('vendor');
-  await page.getByText('Singapore', { exact: true }).click();
-  await page.getByPlaceholder('Search for vendor').click();
-  await page.getByPlaceholder('Search for vendor').fill('vendor');
-  await page.getByText('nil').click();
-  await page.getByText('Overseas', { exact: true }).click();
-  await page.getByTestId('text-field').click();
-  await page.getByTestId('text-field').fill('Vednor');
-  await page.getByText('Where is your vendor registered? *SingaporeOverseasName of Vendor *Supporting').click();
-  await page.locator('body').setInputFiles('A Mindcalm pers 0.png');
-  await page.getByLabel('Estimated Cost in Billing').click();
-  await page.getByLabel('Estimated Cost in Billing').fill('10');
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.locator('li').filter({ hasText: 'Has the applicant been or is currently being: investigated for or charged with' }).locator('label').nth(1).click();
-  await page.locator('li:nth-child(2) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('li:nth-child(3) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('li:nth-child(4) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('li:nth-child(5) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('li:nth-child(6) > .form-group > .controls > label > .radiobutton').first().click();
-  await page.locator('li').filter({ hasText: 'Do any of the suppliers and' }).locator('label').nth(1).click();
-  await page.locator('div').filter({ hasText: /^NoYesSelect an option$/ }).locator('span').first().click();
-  await page.getByText('The Applicant hereby').click();
-  await page.getByRole('button', { name: 'Review' }).click();
-  await page.getByLabel('We, the Applicant, declare').check();
-  await page.getByRole('button', { name: 'Submit' }).click();
-  await page.getByRole('cell', { name: '24096ADU' }).click();
-});
 
