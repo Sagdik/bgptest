@@ -19,7 +19,7 @@ export default class DashbaordPage{
     async clickOnGrantButton(){
         const element = await this.page.locator('xpath = .//*[text()="Get new grant"]');
    
-        await element.waitFor({ state: 'attached', timeout: 55000 }); // 550000 ms timeout
+        await element.waitFor({ state: 'visible', timeout: 75000 }); // 550000 ms timeout
       
         await element.click();
         
@@ -167,8 +167,8 @@ export default class DashbaordPage{
         await this.page.getByText('Overseas', { exact: true }).click();
         await this.page.getByTestId('text-field').click();
         await this.page.locator('[placeholder="Key in name for overseas vendor"]').fill('Vednor');
-        await this.page.locator('[id="react-project_cost-vendors-0-attachments-btn"]').click();
-        await this.page.locator('body').setInputFiles('/files/A Mindcalm pers 0.png');
+        //await this.page.locator('[id="react-project_cost-vendors-0-attachments-btn"]').click();
+        await this.page.locator('[id="react-project_cost-vendors-0-attachments-btn"]').setInputFiles('files/test.png');
         await this.page.getByLabel('Estimated Cost in Billing').click();
         await this.page.getByLabel('Estimated Cost in Billing').fill('10');
         await this.page.getByRole('button', { name: 'Next' }).click();
